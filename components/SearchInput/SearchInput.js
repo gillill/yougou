@@ -1,4 +1,4 @@
-// pages/pay/pay.js
+// components/SearchInput/SearchInput.js
 Page({
 
   /**
