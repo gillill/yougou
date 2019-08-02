@@ -15,6 +15,7 @@ Page({
     pagenum: 1,
     pagesize: 10
   },
+  TotalPages: 1,
   onLoad(options) {
     // console.log(options)
     this.QueryParams.cid = options.cid
@@ -22,12 +23,32 @@ Page({
   },
   getGoodsList() {
     request({ url: '/goods/search', data: this.QueryParams })
-    .then(res=>{
-      console.log(res)
-      this.setData({
-        goodsList: res.goods
+      .then(res => {
+        console.log(res)
+        this.TotalPages = Math.ceil(res.total / this.QueryParams.pagesize)
+        this.setData({
+          goodsList: [...this.data.goodsList, ...res.goods]
+        })
+        wx.stopPullDownRefresh()
       })
+  },
+  onReachBottom() {
+    if (this.QueryParams.pagenum >= this.TotalPages) {
+      wx.showToast({
+        title: '没有下一页数据了',
+        icon: 'none'
+      })
+    } else {
+      this.QueryParams.pagenum++
+      this.getGoodsList()
+    }
+  },
+  onPullDownRefresh() {
+    this.QueryParams.pagenum = 1
+    this.setData({
+      goodsList: []
     })
+    this.getGoodsList()
   },
   handleTitleChange(e) {
     const { index } = e.detail
