@@ -1,31 +1,21 @@
-// pages/cart/index.js
+import regeneratorRuntime from '../../lib/runtime/runtime';
+import { getSetting, openSetting, chooseAddress } from "../../utils/asyncWx";
 Page({
-  handleChooseAddress() {
-    wx.getSetting({
-      success: (result1) => {
-        const scopeAddress = result1.authSetting['scope.address']
-        if (scopeAddress === true || scopeAddress === undefined) {
-          wx.chooseAddress({
-            success: (result2) => {
-              console.log(result2)
-            }
-          })
-        } else {
-          wx.openSetting({
-            success: () => {
-              wx.chooseAddress({
-                success: (result3) => {
-                  console.log(result3)
-                },
-                fail: () => { },
-                complete: () => { }
-              })
-            }
-          })
-        }
-      },
-      fail: () => { },
-      complete: () => { }
-    })
+  async handleChooseAddress() {
+    // 1 获取授权信息
+    const res1 = await getSetting();
+    const scopeAddress = res1.authSetting['scope.address'];
+    // 2 对授权信息判断
+    if (scopeAddress === true || scopeAddress === undefined) {
+      // 2.1直接调用获取收货地址的api
+      const res2 = await chooseAddress();
+      console.log(res2);
+    } else {
+      // 2.2 诱导用户 打开授权页面
+      await openSetting();
+      // 2.3 获取收货地址
+      const res2 = await chooseAddress();
+      console.log(res2);
+    }
   }
 })
