@@ -75,7 +75,7 @@
 					"id": -1,
 					"name": "商品详情",
 					"pathName": "pages/goods_detail/index",
-					"query": "cid=6",
+					"query": "goods_id=47868",
 					"scene": null
 				}
 			]

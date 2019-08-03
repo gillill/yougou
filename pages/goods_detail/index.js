@@ -19,5 +19,14 @@ Page({
         pics: res.pics
       }
     })
+  },
+  handlePreviewImage(e) {
+    const { index } = e.currentTarget.dataset
+    const urls = this.data.goodsObj.pics.map(v => v.pics_big)
+    const current = urls[index]
+    wx.previewImage({
+      current,
+      urls
+    })
   }
 })
