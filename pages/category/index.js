@@ -1,4 +1,6 @@
 import { request } from '../../request/index.js'
+import regeneratorRuntime from '../../lib/runtime/runtime';
+import { getStorageCates, setStorageCates } from "../../utils/storage.js";
 Page({
   data: {
     leftMenuList: [],
@@ -8,7 +10,7 @@ Page({
   },
   Cates: [],
   onLoad() {
-    let cates = wx.setStorageSync('cates');
+    let cates = getStorageCates();
     if (!cates) {
       this.getCategoryList();
     } else {
@@ -27,33 +29,28 @@ Page({
       }
     }
   },
-  getCategoryList() {
-    request({
-      url: '/categories'
-    })
-      .then(result => {
-        this.Cates = result
-        wx.setStorageSync('cates', { time: Date.now(), data: this.Cates })
-        let leftMenuList = this.Cates.map((v, i) => ({
-          cat_name: v.cat_name, cat_id: v.cat_id
-        }))
-        let rightGoodsList = this.Cates[0].children
-        this.setData({
-          leftMenuList,
-          rightGoodsList
+  async getCategoryList() {
+    const result = await request({ url: '/categories' })
+    this.Cates = result
+    setStorageCates('cates', { time: Date.now(), data: this.Cates })
+    let leftMenuList = this.Cates.map((v, i) => ({
+      cat_name: v.cat_name, cat_id: v.cat_id
+    }))
+    let rightGoodsList = this.Cates[0].children
+    this.setData({
+      leftMenuList,
+      rightGoodsList
 
-        })
-        // console.log(leftMenuList)
-        // console.log(rightGoodsList)
-      })
+    })
   },
   handleMenuChange(e) {
-    const { index } = e.currentIndex.dataset
+    console.log(e)
+    const { index } = e.currentTarget.dataset
     let rightGoodsList = this.Cates[index].children
     this.setData({
       currentIndex: index,
       rightGoodsList,
-      scrollTop
+      scrollTop: 0
     })
   }
 })

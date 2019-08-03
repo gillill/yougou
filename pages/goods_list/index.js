@@ -1,4 +1,5 @@
 import { request } from "../../request/index.js";
+import regeneratorRuntime from '../../lib/runtime/runtime';
 
 Page({
   data: {
@@ -21,16 +22,14 @@ Page({
     this.QueryParams.cid = options.cid
     this.getGoodsList()
   },
-  getGoodsList() {
-    request({ url: '/goods/search', data: this.QueryParams })
-      .then(res => {
-        console.log(res)
-        this.TotalPages = Math.ceil(res.total / this.QueryParams.pagesize)
-        this.setData({
-          goodsList: [...this.data.goodsList, ...res.goods]
-        })
-        wx.stopPullDownRefresh()
-      })
+  async getGoodsList() {
+    const res = await request({ url: '/goods/search', data: this.QueryParams })
+    console.log(res)
+    this.TotalPages = Math.ceil(res.total / this.QueryParams.pagesize)
+    this.setData({
+      goodsList: [...this.data.goodsList, ...res.goods]
+    })
+    wx.stopPullDownRefresh()
   },
   onReachBottom() {
     if (this.QueryParams.pagenum >= this.TotalPages) {

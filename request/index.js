@@ -1,4 +1,10 @@
+let ajaxTimes = 0
 export const request = (params) => {
+    wx.showLoading({
+        title: '加载中...'
+    })
+    ajaxTimes++
+
     const baseUrl = 'https://api.zbztb.cn/api/public/v1';
     return new Promise((reslove, reject) => {
         wx.request({
@@ -9,6 +15,12 @@ export const request = (params) => {
             },
             fail: (error) => {
                 reject(error)
+            },
+            complete: () => {
+                ajaxTimes--
+                if (ajaxTimes === 0) {
+                    wx.hideLoading()
+                }
             }
         });
     })
